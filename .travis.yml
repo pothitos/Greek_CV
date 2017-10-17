@@ -22,8 +22,8 @@ script:
 
 after_success:
   # Decrypt private key for accessing web server
-  - openssl aes-256-cbc -K $encrypted_918acdda239c_key
-    -iv $encrypted_918acdda239c_iv
+  - openssl aes-256-cbc -K $encrypted_d1ccd4d8ef40_key
+    -iv $encrypted_d1ccd4d8ef40_iv
     -in key_for_uploading.pem.enc
     -out key_for_uploading.pem -d
   - chmod 600 key_for_uploading.pem
