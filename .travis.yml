@@ -1,0 +1,34 @@
+# This is used by Travis CI site in order
+# to produce a PDF file out of LuaLaTeX.
+
+addons:
+  apt:
+    packages:
+      - texlive-full
+
+script:
+  # Create temporary directory
+  - mkdir hyphenation
+  - cd hyphenation
+  # Concatenate English and Greek hyphenation rules
+  - cat /usr/share/texlive/texmf-dist/tex/generic/hyphen/hyphen.tex
+    /usr/share/texlive/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-el-monoton.tex
+    > dumyhyph.tex
+  # Install joined hyphenation rules
+  - mktexfmt lualatex.fmt
+  - cd -
+  # Produce PDF
+  - lualatex -interaction=nonstopmode KomninouCV.tex
+
+after_success:
+  # Decrypt private key for accessing web server
+  - openssl aes-256-cbc -K $encrypted_918acdda239c_key
+    -iv $encrypted_918acdda239c_iv
+    -in key_for_uploading.pem.enc
+    -out key_for_uploading.pem -d
+  - chmod 600 key_for_uploading.pem
+  # Upload to web server
+  - scp -i key_for_uploading.pem -o StrictHostKeyChecking=no
+    KomninouCV.pdf pothitos@linux19.di.uoa.gr:public_html/
+  - ssh -i key_for_uploading.pem pothitos@linux19.di.uoa.gr
+    chmod o+r public_html/KomninouCV.pdf
